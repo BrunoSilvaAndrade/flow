@@ -1,0 +1,13 @@
+<configuration>
+    <include resource="logback-pipeline.xml"/>
+
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%d{HH:mm:ss.SSS}] [%t] %highlight(%-5level) %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root>
+        <appender-ref ref="stdout" />
+    </root>
+</configuration>
