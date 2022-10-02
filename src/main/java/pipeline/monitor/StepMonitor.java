@@ -18,11 +18,14 @@ public class StepMonitor {
     private final PipelineMonitor pipelineMonitor;
     private final String stepName;
 
+    private final String stepPosition;
+
     private Counter failuresCount;
     private Timer executionsTimer;
 
-    public StepMonitor(PipelineMonitor pipelineMonitor, String stepName) {
+    public StepMonitor(PipelineMonitor pipelineMonitor, String stepName, int stepPosition) {
         this.pipelineMonitor = pipelineMonitor;
+        this.stepPosition = String.valueOf(stepPosition);
         this.stepName = stepName;
 
         pipelineMonitor.subscribe(this);
@@ -33,8 +36,11 @@ public class StepMonitor {
         final var register = pipelineMonitor.getMeterRegistry();
         final var pipelineName = pipelineMonitor.getPipelineName();
 
-        executionsTimer = Timer.builder(STEP_EXECUTION_TIME_METRIC).tags( PIPELINE_NAME_TAG, pipelineName, STEP_NAME_TAG, stepName).register(register);
-        failuresCount = Counter.builder(STEP_FAILURES_COUNT_METRIC).tags(PIPELINE_NAME_TAG, pipelineName, STEP_NAME_TAG, stepName).register(register);
+        executionsTimer = Timer.builder(STEP_EXECUTION_TIME_METRIC)
+                .tags(PIPELINE_NAME_TAG, pipelineName, STEP_NAME_TAG, stepName, STEP_POSITION_TAG, stepPosition).register(register);
+
+        failuresCount = Counter.builder(STEP_FAILURES_COUNT_METRIC)
+                .tags(PIPELINE_NAME_TAG, pipelineName, STEP_NAME_TAG, stepName, STEP_POSITION_TAG, stepPosition).register(register);
     }
 
     public void updateMeterRegistry(){

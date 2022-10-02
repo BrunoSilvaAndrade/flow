@@ -23,12 +23,12 @@ public class StepConnector<I, O, O2> implements Step<I, O2> {
         this.current = current;
         this.currentPosition = stepCount - 1;
         this.currentName = getStepName(current, currentPosition);
-        this.currentMonitor = new StepMonitor(pipelineMonitor, this.currentName);
+        this.currentMonitor = new StepMonitor(pipelineMonitor, this.currentName, currentPosition);
 
         this.next = next;
         this.nextPosition = stepCount;
         this.nextName = getStepName(next, nextPosition);
-        this.nextMonitor = new StepMonitor(pipelineMonitor, this.nextName);
+        this.nextMonitor = new StepMonitor(pipelineMonitor, this.nextName, nextPosition);
     }
 
     @Override
