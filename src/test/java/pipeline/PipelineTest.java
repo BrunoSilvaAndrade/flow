@@ -14,10 +14,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PipelineTest {
+class PipelineTest {
 
     @BeforeAll
-    public static void setUp(){
+    static void setUp(){
         Metrics.addRegistry(new SimpleMeterRegistry());
     }
     private static class Sum1Step implements Step<Integer, Integer> {
@@ -29,14 +29,14 @@ public class PipelineTest {
     }
 
     @Test
-    public void testPipelineAssertations(){
+    void testPipelineAssertations(){
         assertThrows(AssertionError.class, () -> Pipeline.init(null));
         assertThrows(AssertionError.class, () -> Pipeline.init(""));
         assertThrows(AssertionError.class, () -> Pipeline.init("id").next(null));
     }
 
     @Test
-    public void testPipeline(){
+    void testPipeline(){
         var result = Pipeline.<Integer>init("Test")
                 .next(new Sum1Step())
                 .next(in -> in + 1)
@@ -46,7 +46,7 @@ public class PipelineTest {
     }
 
     @Test
-    public void testPipelineErrorHandlingWithClass(){
+    void testPipelineErrorHandlingWithClass(){
         final var atomicBool = new AtomicBoolean(false);
         final var atomicThrowable = new AtomicReference<Throwable>();
 
@@ -76,7 +76,7 @@ public class PipelineTest {
 
 
     @Test
-    public void testPipelineErrorHandlingWithLambda(){
+    void testPipelineErrorHandlingWithLambda(){
         final var atomicBool = new AtomicBoolean(false);
         final var atomicThrowable = new AtomicReference<Throwable>();
 
@@ -102,7 +102,7 @@ public class PipelineTest {
 
 
     @Test
-    public void testStepErrorException(){
+    void testStepErrorException(){
         assertThrows(StepException.class, () ->
             Pipeline.<String>init("TestThrowing")
                     .next(in -> {
@@ -112,7 +112,7 @@ public class PipelineTest {
     }
 
     @Test
-    public void testIntentionalStepException(){
+    void testIntentionalStepException(){
         assertThrows(StepException.class, () ->
             Pipeline.<String>init("TestThrowing")
                     .next(in -> {

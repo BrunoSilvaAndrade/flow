@@ -56,7 +56,7 @@ public interface Step<I, O> {
          }
      }
 
-     O process(I in) throws Exception;
+     O process(I in);
 
     default StepOutput<O> apply(Pipeline<?, ?> pipeline, String myName, int myPosition, StepMonitor monitor, final I in) {
 
