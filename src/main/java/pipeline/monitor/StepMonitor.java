@@ -6,6 +6,7 @@ import io.micrometer.core.instrument.Timer;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+
 import static pipeline.monitor.PipelineMonitor.PIPELINE_NAME_TAG;
 
 public class StepMonitor {
@@ -17,7 +18,6 @@ public class StepMonitor {
 
     private final PipelineMonitor pipelineMonitor;
     private final String stepName;
-
     private final String stepPosition;
 
     private Counter failuresCount;

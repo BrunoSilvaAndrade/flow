@@ -1,12 +1,13 @@
 package pipeline;
 
-import pipeline.error.ErrorHandler;
-import pipeline.error.StepException;
-import pipeline.step.Step;
+
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import pipeline.error.ErrorHandler;
+import pipeline.error.StepException;
+import pipeline.step.Step;
 
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -29,10 +30,18 @@ class PipelineTest {
     }
 
     @Test
-    void testPipelineAssertations(){
+    void testDuplicatedPipelineName(){
+        Pipeline.init("UniqueID");
+        assertThrows(IllegalArgumentException.class, () -> Pipeline.init("UniqueID"));
+    }
+
+    @Test
+    void testPipelineAssertions(){
         assertThrows(AssertionError.class, () -> Pipeline.init(null));
         assertThrows(AssertionError.class, () -> Pipeline.init(""));
-        assertThrows(AssertionError.class, () -> Pipeline.init("id").next(null));
+
+        var pipe = Pipeline.init("id");
+        assertThrows(AssertionError.class, () -> pipe.next(null));
     }
 
     @Test
@@ -53,7 +62,7 @@ class PipelineTest {
         class TestErrorHandler implements ErrorHandler<String> {
 
             @Override
-            public void accept(String integer, Exception e) {
+            public void accept(String integer, StepException e) {
                 log.info("Handling error");
 
                 atomicBool.set(true);
@@ -61,7 +70,7 @@ class PipelineTest {
             }
         }
 
-        final var pipe = Pipeline.<String>init("ErrorHandlerTest")
+        final var pipe = Pipeline.<String>init("testPipelineErrorHandlingWithClass")
                 .next(str -> {
                     throw new NoSuchElementException();
                 })
@@ -80,13 +89,14 @@ class PipelineTest {
         final var atomicBool = new AtomicBoolean(false);
         final var atomicThrowable = new AtomicReference<Throwable>();
 
-        final var pipe = Pipeline.<String>init("ErrorHandlerTest")
+        final var pipe = Pipeline.<String>init("testPipelineErrorHandlingWithLambda")
                 .next(str -> {
                     throw new NoSuchElementException();
                 })
-                .onError((str, throwable) -> {
+                .onError((str, e) -> {
+                    Step.log.warn("Handling error of pipeline {} and step {}", e.getPipelineName(), e.getStepName());
                     atomicBool.set(true);
-                    atomicThrowable.set(throwable);
+                    atomicThrowable.set(e);
                 });
 
 
@@ -103,21 +113,21 @@ class PipelineTest {
 
     @Test
     void testStepErrorException(){
-        assertThrows(StepException.class, () ->
-            Pipeline.<String>init("TestThrowing")
-                    .next(in -> {
-                        throw new NoSuchElementException();
-                    })
-                    .execute("Any input"));
+        var pipe = Pipeline.<String>init("testStepErrorException")
+                .next(in -> {
+                    throw new NoSuchElementException();
+                });
+
+        assertThrows(StepException.class, () -> pipe.execute("Any input"));
     }
 
     @Test
     void testIntentionalStepException(){
-        assertThrows(StepException.class, () ->
-            Pipeline.<String>init("TestThrowing")
-                    .next(in -> {
-                        throw new StepException("A intentional StepException throwing");
-                    })
-                    .execute("Any input"));
+        var pipe = Pipeline.<String>init("testIntentionalStepException")
+                .next(in -> {
+                    throw new StepException("MyPipeline", "MyStep","A intentional StepException throwing");
+                });
+
+        assertThrows(StepException.class, () -> pipe.execute("Some input"));
     }
 }
