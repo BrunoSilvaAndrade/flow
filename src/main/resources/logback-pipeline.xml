@@ -2,7 +2,7 @@
 
     <appender name="pipe-stdout" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>[%d{HH:mm:ss.SSS}] [%t] %highlight(%-5level) PipeLogger - %boldBlue(C)[%boldMagenta(%X{request.correlation})] %boldBlue(Pipeline)[%boldMagenta(%X{pipeline.name})] %boldBlue(Step)[%boldMagenta(%X{step.name})] - %m%n</pattern>
+            <pattern>[%d{HH:mm:ss.SSS}] [%t] %highlight(%-5level) PipeLogger - %boldBlue(Pipeline)[%boldMagenta(%X{pipeline.name})] %boldBlue(Step)[%boldMagenta(%X{step.name})] - %m%n</pattern>
         </encoder>
     </appender>
 
