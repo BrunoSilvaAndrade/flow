@@ -31,26 +31,39 @@ import static pipeline.logging.LoggingUtils.MDC_PIPELINE_NAME;
 public class Pipeline<I, O> {
     public static final Logger log = LoggerFactory.getLogger(Pipeline.class);
     private static final Map<String, Pipeline<?,?>> register = new HashMap<>();
-    private final PipelineMonitor monitor;
+
     private final String name;
-    private final IPipe<I, O> current;
-
     private final int stepCount;
+    private final IPipe<I, O> current;
+    private final PipelineMonitor monitor;
 
+    private IRetry retry;
     private ErrorHandler<I> onErrorHandler;
 
-    private IRetry retry = new SimpleRetry();
+    private Pipeline(String name, Pipeline<I,O> pipeline) {
+        this.name = name;
+        this.stepCount = pipeline.stepCount;
+        this.retry = pipeline.retry;
+        this.onErrorHandler = pipeline.onErrorHandler;
+        this.monitor = new PipelineMonitor(name);
+        this.current = pipeline.current.copyFor(this);
 
-    private Pipeline(String name, IPipe<I, O> current, int stepCount) {
+        register.put(name, this);
+    }
+
+    private Pipeline(String name, IPipe<I, O> current, int stepCount, IRetry retry, ErrorHandler<I> onErrorHandler) {
         this.name = name;
         this.current = current;
         this.stepCount = stepCount;
-        monitor = new PipelineMonitor(name);
+        this.retry = retry;
+        this.onErrorHandler = onErrorHandler;
+        this.monitor = new PipelineMonitor(name);
+
         register.put(name, this);
     }
 
     private Pipeline(String name, IPipe<I, O> current){
-        this(name, current, 0);
+        this(name, current, 0, new SimpleRetry(), null);
     }
 
     public String getName() {
@@ -79,9 +92,11 @@ public class Pipeline<I, O> {
 
     public <O2> Pipeline<I, O2> next(Step<O, O2> next) {
         if(isNull(next)) throw new AssertionError("<next> cannot be null");
-        final var nextStartCounting = this.stepCount + 1;
 
-        return new Pipeline<>(name, new Pipe<>(current, next, monitor, nextStartCounting), nextStartCounting);
+        final var nextStartCounting = this.stepCount + 1;
+        final var pipe = new Pipe<>(current, next, monitor, nextStartCounting);
+
+        return new Pipeline<>(name, pipe, nextStartCounting, retry, onErrorHandler);
     }
 
     public O execute(I input){
@@ -117,13 +132,21 @@ public class Pipeline<I, O> {
         throw stepException;
     }
 
-    public static <T> Pipeline<T, T> init(String id) {
-        if(isNull(id) || id.isEmpty()) throw new AssertionError("Pipeline name cannot be null or empty");
+    public Pipeline<I, O> copy(String name){
+        checkIfNameIsAvailable(name);
 
-        synchronized (register){
-            if(register.containsKey(id)) throw new IllegalArgumentException("Id: <" + id + "> is already being used");
-        }
+        return new Pipeline<>(name, this);
+    }
 
-        return new Pipeline<>(id, new InitialPipe<>());
+    public static synchronized void checkIfNameIsAvailable(String name){
+        if(register.containsKey(name)) throw new IllegalArgumentException("Name: <" + name + "> is already being used");
+    }
+
+    public static <T> Pipeline<T, T> init(String name) {
+        if(isNull(name) || name.isEmpty()) throw new AssertionError("Pipeline name cannot be null or empty");
+
+        checkIfNameIsAvailable(name);
+
+        return new Pipeline<>(name, new InitialPipe<>());
     }
 }

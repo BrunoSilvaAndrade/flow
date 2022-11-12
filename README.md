@@ -49,6 +49,17 @@ final var pipe = Pipeline.init("MyPipeId")
         })
         .onError((o, stepException) -> log.error("An error occurred during pipeline processing", stepException));
 
+
+//You can also copy a pipeline to a new one
+//So you can modify the new one without affecting the original one;
+
+final var copy = pipe.copy("new copy id");
+copy.onError((o, stepException) -> {
+        //So you can for example define a new ErrorHandler on the copy
+        throw new RuntimeException("msg", stepException)
+        });
+
+
         pipe.execute("35467890");
 ```
 ---

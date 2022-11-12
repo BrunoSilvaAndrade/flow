@@ -1,5 +1,5 @@
 <configuration>
-    <include resource="logback-pipeline.xml"/>
+    <include resource="logback-flow.xml"/>
 
     <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>

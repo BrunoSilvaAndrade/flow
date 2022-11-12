@@ -33,4 +33,9 @@ public class Pipe<I, O, O2> implements IPipe<I, O2> {
 
         return step.apply(pipeline, stepPosition, stepMonitor, currentOutput.getResultObj());
     }
+
+    @Override
+    public IPipe<I, O2> copyFor(Pipeline<?, ?> pipeline){
+        return new Pipe<>(previousPipe.copyFor(pipeline), step, pipeline.getMonitor(), stepPosition);
+    }
 }

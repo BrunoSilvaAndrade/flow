@@ -130,4 +130,22 @@ class PipelineTest {
 
         assertThrows(StepException.class, () -> pipe.execute("Some input"));
     }
+
+
+    @Test
+    void testCopy(){
+        final var flag = new AtomicBoolean(false);
+
+        var pipe = Pipeline.<AtomicBoolean>init("PipeToCopy")
+                .next(bool -> {
+                    bool.set(true);
+                    return bool;
+                });
+
+        var copy = pipe.copy("copyPipe");
+
+        copy.execute(flag);
+
+        assertTrue(flag.get());
+    }
 }
