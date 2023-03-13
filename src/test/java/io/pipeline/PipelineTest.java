@@ -1,13 +1,13 @@
-package pipeline;
+package io.pipeline;
 
 
 import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import io.pipeline.error.ErrorHandler;
+import io.pipeline.error.StepException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import pipeline.error.ErrorHandler;
-import pipeline.error.StepException;
-import pipeline.step.Step;
+import io.pipeline.step.Step;
 
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicBoolean;

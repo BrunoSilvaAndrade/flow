@@ -1,4 +1,4 @@
-package pipeline.retry;
+package io.pipeline.retry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

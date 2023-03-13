@@ -1,8 +1,8 @@
-package pipeline.pipe;
+package io.pipeline.pipe;
 
 
-import pipeline.Pipeline;
-import pipeline.step.Step;
+import io.pipeline.step.Step;
+import io.pipeline.Pipeline;
 
 public class InitialPipe<T> implements IPipe<T, T> {
     @Override

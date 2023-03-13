@@ -1,4 +1,4 @@
-package pipeline.retry;
+package io.pipeline.retry;
 
 public interface IRetry {
     @FunctionalInterface

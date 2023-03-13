@@ -1,16 +1,15 @@
-package pipeline.step;
+package io.pipeline.step;
 
 
+import io.pipeline.logging.LoggingUtils;
+import io.pipeline.monitor.StepMonitor;
+import io.pipeline.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import pipeline.Pipeline;
-import pipeline.monitor.StepMonitor;
+import io.pipeline.Pipeline;
 
 import static java.lang.String.format;
-import static pipeline.logging.LoggingUtils.MDC_STEP_NAME;
-import static pipeline.logging.LoggingUtils.MDC_STEP_POSITION;
-import static pipeline.utils.Utils.isLambda;
 
 public interface Step<I, O> {
      Logger log = LoggerFactory.getLogger(Step.class);
@@ -68,8 +67,8 @@ public interface Step<I, O> {
     default StepOutput<O> apply(Pipeline<?, ?> pipeline, int myPosition, StepMonitor monitor, final I in) {
         final var myName = getStepName(myPosition);
 
-        MDC.put(MDC_STEP_NAME, myName);
-        MDC.put(MDC_STEP_POSITION, String.valueOf(myPosition));
+        MDC.put(LoggingUtils.MDC_STEP_NAME, myName);
+        MDC.put(LoggingUtils.MDC_STEP_POSITION, String.valueOf(myPosition));
 
         log.debug("executing");
         final StepOutput<O> result =  monitor.clock(()  -> {
@@ -90,7 +89,7 @@ public interface Step<I, O> {
     default String getStepName(int stepPosition){
         final var stepName = this.getClass().getSimpleName();
 
-        if(isLambda(stepName))
+        if(Utils.isLambda(stepName))
             return format(LAMBDA_TEMPLATE, stepPosition);
 
         return stepName;

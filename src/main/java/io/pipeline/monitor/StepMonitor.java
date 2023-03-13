@@ -1,4 +1,4 @@
-package pipeline.monitor;
+package io.pipeline.monitor;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.Timer;
@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 
-import static pipeline.monitor.PipelineMonitor.PIPELINE_NAME_TAG;
+import static io.pipeline.monitor.PipelineMonitor.PIPELINE_NAME_TAG;
 
 public class StepMonitor {
     public static final String STEP_NAME_TAG = "step.name";

@@ -1,4 +1,4 @@
-package pipeline.logging;
+package io.pipeline.logging;
 
 public final class LoggingUtils {
     private LoggingUtils(){}

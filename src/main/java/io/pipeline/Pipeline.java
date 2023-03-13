@@ -1,18 +1,19 @@
-package pipeline;
+package io.pipeline;
 
 
+import io.pipeline.error.ErrorHandler;
+import io.pipeline.error.StepException;
+import io.pipeline.logging.LoggingUtils;
+import io.pipeline.monitor.PipelineMonitor;
+import io.pipeline.pipe.IPipe;
+import io.pipeline.pipe.InitialPipe;
+import io.pipeline.pipe.Pipe;
+import io.pipeline.retry.IRetry;
+import io.pipeline.retry.SimpleRetry;
+import io.pipeline.step.Step;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import pipeline.error.ErrorHandler;
-import pipeline.error.StepException;
-import pipeline.monitor.PipelineMonitor;
-import pipeline.pipe.IPipe;
-import pipeline.pipe.InitialPipe;
-import pipeline.pipe.Pipe;
-import pipeline.retry.IRetry;
-import pipeline.retry.SimpleRetry;
-import pipeline.step.Step;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +21,6 @@ import java.util.Map;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
-import static pipeline.logging.LoggingUtils.MDC_PIPELINE_NAME;
 
 /**
  * Following the conventional pipeline pattern but with some additional functionality,
@@ -102,7 +102,7 @@ public class Pipeline<I, O> {
     public O execute(I input){
         monitor.incrementExecutionCount();
 
-        MDC.put(MDC_PIPELINE_NAME, name);
+        MDC.put(LoggingUtils.MDC_PIPELINE_NAME, name);
         final var output = monitor.clockExecution(() -> current.apply(this, input));
 
         if(output.succeeded()){

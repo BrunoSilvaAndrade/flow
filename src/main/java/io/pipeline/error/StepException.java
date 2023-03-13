@@ -1,4 +1,4 @@
-package pipeline.error;
+package io.pipeline.error;
 
 public class StepException extends RuntimeException {
     private final String pipelineName;

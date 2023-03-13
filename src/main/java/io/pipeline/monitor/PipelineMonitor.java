@@ -1,4 +1,4 @@
-package pipeline.monitor;
+package io.pipeline.monitor;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.LongTaskTimer;

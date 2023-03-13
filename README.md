@@ -18,7 +18,7 @@ HOW TO USE
 
 ```java
 
-import pipeline.Pipeline;
+import io.pipeline.Pipeline;
 
 @Sfl4j
 public class StringToLong implements Step<String, Long> {
@@ -30,33 +30,33 @@ public class StringToLong implements Step<String, Long> {
 }
 
 
-final var pipe = Pipeline.init("MyPipeId")
-        .next(new StringToLong())
-        .next(longId -> {
-            //Do something with a lambda if you need
-            Step.log.info("Deleting document of id <{}>", longId);
-            return myRespository.deleteById(longId);
-        })
-        //As you know the step above could be written like this:
-        .next(myRepository::deleteById)
-        .next(isDeleted -> {
-            //Let's suppose that the repository would return a boolean indicating if the 
-            //document was deleted or not
-            if(isDeleted)
-                log.info("Heell yeah");
-            else
-                log.info("The document doesnt exists");
-        })
-        .onError((o, stepException) -> log.error("An error occurred during pipeline processing", stepException));
+    final var pipe = Pipeline.init("MyPipeId")
+            .next(new StringToLong())
+            .next(longId -> {
+                //Do something with a lambda if you need
+                Step.log.info("Deleting document of id <{}>", longId);
+                return myRespository.deleteById(longId);
+            })
+            //As you know the step above could be written like this:
+            .next(myRepository::deleteById)
+            .next(isDeleted -> {
+                //Let's suppose that the repository would return a boolean indicating if the 
+                //document was deleted or not
+                if (isDeleted)
+                    log.info("Heell yeah");
+                else
+                    log.info("The document doesnt exists");
+            })
+            .onError((o, stepException) -> log.error("An error occurred during pipeline processing", stepException));
 
 
 //You can also copy a pipeline to a new one
 //So you can modify the new one without affecting the original one;
 
-final var copy = pipe.copy("new copy id");
-copy.onError((o, stepException) -> {
+    final var copy = pipe.copy("new copy id");
+copy.onError((o,stepException)->{
         //So you can for example define a new ErrorHandler on the copy
-        throw new RuntimeException("msg", stepException)
+        throw new RuntimeException("msg",stepException)
         });
 
 

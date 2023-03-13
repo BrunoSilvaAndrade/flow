@@ -1,12 +1,10 @@
-package pipeline.pipe;
+package io.pipeline.pipe;
 
 
-import pipeline.Pipeline;
-import pipeline.monitor.PipelineMonitor;
-import pipeline.monitor.StepMonitor;
-import pipeline.step.Step;
-
-import static pipeline.step.Step.StepOutput.failure;
+import io.pipeline.monitor.PipelineMonitor;
+import io.pipeline.monitor.StepMonitor;
+import io.pipeline.step.Step;
+import io.pipeline.Pipeline;
 
 public class Pipe<I, O, O2> implements IPipe<I, O2> {
     private final IPipe<I, O> previousPipe;
@@ -29,7 +27,7 @@ public class Pipe<I, O, O2> implements IPipe<I, O2> {
         final var currentOutput = previousPipe.apply(pipeline, in);
 
         if(currentOutput.failed())
-            return failure(currentOutput.getLastException(), currentOutput.getStepName());
+            return Step.StepOutput.failure(currentOutput.getLastException(), currentOutput.getStepName());
 
         return step.apply(pipeline, stepPosition, stepMonitor, currentOutput.getResultObj());
     }
